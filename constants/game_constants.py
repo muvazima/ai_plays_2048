@@ -1,4 +1,3 @@
-from util import game_util
 
 UP = "UP"
 DOWN = "DOWN"
@@ -7,9 +6,9 @@ RIGHT = "RIGHT"
 
 actions = [UP, DOWN, LEFT, RIGHT]
 
-action_functions = {
-    UP: game_util.move_up,
-    DOWN: game_util.move_down,
-    LEFT: game_util.move_left,
-    RIGHT: game_util.move_right
-}
+monotonicity_weightage = 0.2
+smoothness_weightage = 0.3
+empty_cell_weightage = 0.3
+max_value_weightage = 0.2
+
+
