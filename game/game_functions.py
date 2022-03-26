@@ -25,7 +25,6 @@ def push_board_right(board):
                 if col != count:
                     done = True
                 count -= 1
-    print(done)
     return (new, done)
 
 

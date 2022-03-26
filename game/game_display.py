@@ -1,7 +1,12 @@
+import time
 from tkinter import Frame, Label, CENTER
 
-# import game_ai
 import game_functions
+from constants import game_constants
+
+from util import game_util
+
+from algorithms.GreedySearch import GreedySearch
 
 EDGE_LENGTH = 400
 CELL_COUNT = 4
@@ -13,6 +18,7 @@ LEFT_KEY = "'a'"
 RIGHT_KEY = "'d'"
 AI_KEY = "'q'"
 AI_PLAY_KEY = "'p'"
+GREEDY_KEY = "'g'"
 
 LABEL_FONT = ("Verdana", 40, "bold")
 
@@ -32,26 +38,44 @@ LABEL_COLORS = {2: "#011c08", 4: "#011c08", 8: "#011c08", 16: "#011c08",
 
 
 class Display(Frame):
-    def __init__(self):
+    def __init__(self, solver):
         Frame.__init__(self)
 
         self.grid()
         self.master.title('2048')
         self.master.bind("<Key>", self.key_press)
 
-        self.commands = {UP_KEY: game_functions.move_up,
+        self.commands = {
+                         UP_KEY: game_functions.move_up,
                          DOWN_KEY: game_functions.move_down,
                          LEFT_KEY: game_functions.move_left,
                          RIGHT_KEY: game_functions.move_right
-                         # AI_KEY: game_ai.ai_move,
+                         # GREEDY_KEY = GreedySearch()
                          }
 
         self.grid_cells = []
         self.build_grid()
         self.init_matrix()
         self.draw_grid_cells()
-
+        self.update(solver)
         self.mainloop()
+
+
+    def update(self, solver):
+        move_made = None
+
+        while not game_util.is_game_over(self.matrix) and solver != game_constants.MANUAL:
+            if solver == game_constants.GREEDY:
+                move_made = GreedySearch(self.matrix).get_move()
+
+            if move_made:
+                self.matrix, _, _ = game_util.action_functions[move_made](self.matrix)
+                self.matrix = game_functions.add_new_tile(self.matrix)
+                self.draw_grid_cells()
+                move_made = False
+
+        # time.sleep(1)
+        # self.mainloop()
 
     def build_grid(self):
         background = Frame(self, bg=GAME_COLOR,
@@ -94,20 +118,27 @@ class Display(Frame):
         print(self.matrix)
         valid_game = True
         key = repr(event.char)
-        if key == AI_PLAY_KEY:
-            move_count = 0
-            while valid_game:
-                self.matrix, valid_game = game_ai.ai_move(self.matrix, 40, 30)
-                if valid_game:
-                    self.matrix = game_functions.add_new_tile(self.matrix)
-                    self.draw_grid_cells()
-                move_count += 1
-        if key == AI_KEY:
-            self.matrix, move_made = game_ai.ai_move(self.matrix, 20, 30)
+        if key == GREEDY_KEY:
+            move_made = GreedySearch(self.matrix).get_move()
+            self.matrix, _, _ = game_util.action_functions[move_made](self.matrix)
             if move_made:
                 self.matrix = game_functions.add_new_tile(self.matrix)
                 self.draw_grid_cells()
                 move_made = False
+        # if key == AI_PLAY_KEY:
+        #     move_count = 0
+        #     while valid_game:
+        #         self.matrix, valid_game = game_ai.ai_move(self.matrix, 40, 30)
+        #         if valid_game:
+        #             self.matrix = game_functions.add_new_tile(self.matrix)
+        #             self.draw_grid_cells()
+        #         move_count += 1
+        # if key == AI_KEY:
+        #     self.matrix, move_made = game_ai.ai_move(self.matrix, 20, 30)
+        #     if move_made:
+        #         self.matrix = game_functions.add_new_tile(self.matrix)
+        #         self.draw_grid_cells()
+        #         move_made = False
 
         elif key in self.commands:
             self.matrix, move_made, _ = self.commands[repr(event.char)](self.matrix)
@@ -117,4 +148,5 @@ class Display(Frame):
                 move_made = False
 
 
-gamegrid = Display()
+
+

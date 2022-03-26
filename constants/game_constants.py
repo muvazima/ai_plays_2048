@@ -6,9 +6,18 @@ RIGHT = "RIGHT"
 
 actions = [UP, DOWN, LEFT, RIGHT]
 
-monotonicity_weightage = 0.2
+monotonicity_weightage = 0.4
 smoothness_weightage = 0.3
-empty_cell_weightage = 0.3
-max_value_weightage = 0.2
+empty_cell_weightage = 0.1
+max_value_weightage = 0.15
+
+MANUAL = "Manual"
+GREEDY = "Greedy"
+
+solver_map = {"m": MANUAL, "g": GREEDY}
+
+
+
+
 
 

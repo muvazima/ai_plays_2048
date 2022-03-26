@@ -11,7 +11,7 @@ def get_cell_value(grid, index):
 
 
 def get_cell_log_value(grid, index):
-    value = grid[index[0]][index[1]]
+    value = get_cell_value(grid, index)
 
     return get_log(value)
 
@@ -108,21 +108,21 @@ def get_monotonicity_heuristic(grid):
         for j in range(len(grid[0]) - 1):
             diff_x = get_cell_log_value(grid, [i, j]) - get_cell_log_value(grid, [i, j + 1])
             if diff_x >= 0:
-                left_diff += diff_x
+                # left_diff += diff_x
+                left_diff += 1
             else:
-                right_diff += abs(diff_x)
+                # right_diff += abs(diff_x)
+                right_diff += 1
 
             diff_y = get_cell_log_value(grid_transpose, [i, j]) - get_cell_log_value(grid_transpose, [i, j + 1])
             if diff_y >= 0:
-                up_diff += diff_y
+                # up_diff += diff_y
+                up_diff += 1
             else:
-                down_diff += abs(diff_y)
+                # down_diff += abs(diff_y)
+                down_diff += 1
 
-    print(left_diff)
-    print(right_diff)
-    print(up_diff)
-    print(down_diff)
-    total = max(left_diff, right_diff) + max(up_diff, down_diff)
+    total = 2*(max(left_diff, right_diff) + max(up_diff, down_diff))
     return total
 
 
