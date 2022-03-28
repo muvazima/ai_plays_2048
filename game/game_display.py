@@ -2,6 +2,7 @@ import time
 from tkinter import Frame, Label, CENTER
 
 import game_functions
+from algorithms.Expectimax import Expectimax
 from constants import game_constants
 
 from util import game_util
@@ -67,12 +68,14 @@ class Display(Frame):
         while not game_util.is_game_over(self.matrix) and solver != game_constants.MANUAL:
             if solver == game_constants.GREEDY:
                 move_made = GreedySearch(self.matrix).get_move()
-
+            if solver == game_constants.EXPECTIMAX:
+                move_made = Expectimax(self.matrix).get_move()
             if move_made:
                 self.matrix, _, _ = game_util.action_functions[move_made](self.matrix)
                 self.matrix = game_functions.add_new_tile(self.matrix)
                 self.draw_grid_cells()
                 move_made = False
+                print(self.matrix)
 
         # time.sleep(1)
         # self.mainloop()

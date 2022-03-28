@@ -1,4 +1,5 @@
 import math
+from statistics import mean
 
 from constants.game_constants import *
 from game import game_functions
@@ -149,4 +150,5 @@ def get_empty_cell_heuristic(grid):
 
 
 def get_max_value_heuristic(grid):
+    # return mean(math.log(num, 2) for num in np.array(grid)[np.where(np.array(grid) != 0)])
     return math.log(np.max(grid), 2)
