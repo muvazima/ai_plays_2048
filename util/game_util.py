@@ -95,6 +95,8 @@ def is_game_over(grid):
 
 
 def get_total_heuristic(grid):
+    print(get_monotonicity_heuristic(grid), get_smoothness_heuristic(grid), get_empty_cell_heuristic(grid),
+          get_max_value_heuristic(grid))
     return sum([monotonicity_weightage * get_monotonicity_heuristic(grid),
                 smoothness_weightage * get_smoothness_heuristic(grid),
                 empty_cell_weightage * get_empty_cell_heuristic(grid),
@@ -146,9 +148,13 @@ def get_smoothness_heuristic(grid):
 
 
 def get_empty_cell_heuristic(grid):
-    return np.count_nonzero(np.array(grid) == 0)
+    num_zeroes = np.count_nonzero(np.array(grid) == 0)
+    if num_zeroes == 0:
+        return -10000000
+    else:
+        return num_zeroes
 
 
 def get_max_value_heuristic(grid):
-    # return mean(math.log(num, 2) for num in np.array(grid)[np.where(np.array(grid) != 0)])
-    return math.log(np.max(grid), 2)
+    # return mean(np.array(grid)[np.where(np.array(grid) != 0)])
+    return np.max(grid)
