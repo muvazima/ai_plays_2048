@@ -8,10 +8,13 @@ To use **Greedy Search**, run the following command:
 
     python Test/2048solver.py -s g
 
-To use **Expectimax**, run the belo command:
+To use **Expectimax**, run the below command:
 
     python Test/2048solver.py -s e
 
 Change the depth by updating line 14 of Expectimax.py
 
 
+To use **Monte Carlo Tree Search**, run the below command:
+
+    python Test/2048solver.py -s mc

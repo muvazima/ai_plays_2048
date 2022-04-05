@@ -40,10 +40,10 @@ def is_right_possible(grid):
 
 
 def is_up_possible(grid):
-    transposed_grid = np.array(grid).T
+    transposed_grid = np.array(grid,dtype=object).T
     for row in transposed_grid:
         for cell_index in range(len(row) - 1):
-            if (row[cell_index] == 0 and row[cell_index + 1] != 0) or row[cell_index] == row[cell_index + 1]:
+            if ((row[cell_index] == 0 and row[cell_index + 1] != 0) or (row[cell_index] == row[cell_index + 1])):
                 return True
     return False
 
