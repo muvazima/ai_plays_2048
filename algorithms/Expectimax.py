@@ -37,7 +37,7 @@ class Expectimax:
                 child_with_2[index[0]][index[1]] = 2
                 child_with_4 = board.copy()
                 child_with_4[index[0]][index[1]] = 4
-                alpha += (0.8 * self.evaluate(child_with_2, depth=depth - 1, chance=False) \
-                         + 0.2 * self.evaluate(child_with_4, depth=depth - 1, chance=False))/len(zero_index_list)
+                alpha += (0.9 * self.evaluate(child_with_2, depth=depth - 1, chance=False) \
+                         + 0.1 * self.evaluate(child_with_4, depth=depth - 1, chance=False))/len(zero_index_list)
 
         return alpha

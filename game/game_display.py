@@ -3,6 +3,7 @@ from tkinter import Frame, Label, CENTER
 
 import game_functions
 from algorithms.Expectimax import Expectimax
+from algorithms.MonteCarlo import MonteCarlo
 from constants import game_constants
 
 from util import game_util
@@ -70,6 +71,8 @@ class Display(Frame):
                 move_made = GreedySearch(self.matrix).get_move()
             if solver == game_constants.EXPECTIMAX:
                 move_made = Expectimax(self.matrix).get_move()
+            if solver == game_constants.MONTE_CARLO:
+                move_made = MonteCarlo(self.matrix).get_move()
             if move_made:
                 self.matrix, _, _ = game_util.action_functions[move_made](self.matrix)
                 self.matrix = game_functions.add_new_tile(self.matrix)
@@ -149,7 +152,3 @@ class Display(Frame):
                 self.matrix = game_functions.add_new_tile(self.matrix)
                 self.draw_grid_cells()
                 move_made = False
-
-
-
-

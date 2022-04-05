@@ -1,6 +1,9 @@
 from algorithms.GreedySearch import GreedySearch
+from algorithms.MonteCarlo import MonteCarlo
+from constants import game_constants
+import numpy as np
 
-grid = [[1, 2, 1, 4], [2, 2, 2, 5], [1, 3, 1, 6], [2, 5, 6, 7]]
+grid = [[1, 4, 1, 4], [2, 2, 2, 0], [1, 3, 1, 6], [2, 5, 6, 7]]
 # grid = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [16, 8, 2, 8]]
 # print(game_util.is_down_possible(grid))
 # print(game_util.is_up_possible(grid))
@@ -16,4 +19,6 @@ grid = [[1, 2, 1, 4], [2, 2, 2, 5], [1, 3, 1, 6], [2, 5, 6, 7]]
 # print(game_util.get_empty_cell_heuristic(grid))
 # print(game_util.get_smoothness_heuristic(grid))
 
-print(GreedySearch(grid).get_move())
+# print(MonteCarlo(grid).make_move(grid, game_constants.LEFT))
+
+print(np.count_nonzero(np.array(grid) == 0))

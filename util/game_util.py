@@ -80,6 +80,13 @@ action_functions = {
     RIGHT: move_right
 }
 
+action_possible = {
+    UP: is_up_possible,
+    DOWN: is_down_possible,
+    LEFT: is_left_possible,
+    RIGHT: is_right_possible
+}
+
 
 def get_possible_actions(grid):
     actions = []
@@ -95,8 +102,8 @@ def is_game_over(grid):
 
 
 def get_total_heuristic(grid):
-    print(get_monotonicity_heuristic(grid), get_smoothness_heuristic(grid), get_empty_cell_heuristic(grid),
-          get_max_value_heuristic(grid))
+    # print(get_monotonicity_heuristic(grid), get_smoothness_heuristic(grid), get_empty_cell_heuristic(grid),
+    #       get_max_value_heuristic(grid))
     return sum([monotonicity_weightage * get_monotonicity_heuristic(grid),
                 smoothness_weightage * get_smoothness_heuristic(grid),
                 empty_cell_weightage * get_empty_cell_heuristic(grid),

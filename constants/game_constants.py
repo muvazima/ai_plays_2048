@@ -14,8 +14,9 @@ max_value_weightage = 0.1
 MANUAL = "Manual"
 GREEDY = "Greedy"
 EXPECTIMAX = "Expectimax"
+MONTE_CARLO = "MonteCarlo"
 
-solver_map = {"m": MANUAL, "g": GREEDY, "e": EXPECTIMAX}
+solver_map = {"m": MANUAL, "g": GREEDY, "e": EXPECTIMAX, "mc": MONTE_CARLO}
 
 
 
