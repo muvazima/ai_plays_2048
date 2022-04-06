@@ -21,6 +21,6 @@ To use **Monte Carlo Tree Search**, run the below command:
 
 Fix the directory and import error:
 
-```export PYTHONPATH="${PYTHONPATH}:/Users/smcck/Documents/CS-DS/Artificial Intelligence/ai-project"```
+`export PYTHONPATH="${PYTHONPATH}:/Users/smcck/Documents/CS-DS/Artificial Intelligence/ai-project"`
 
-```export PYTHONPATH="${PYTHONPATH}:/Users/smcck/Documents/CS-DS/Artificial Intelligence/ai-project/game"```
+`export PYTHONPATH="${PYTHONPATH}:/Users/smcck/Documents/CS-DS/Artificial Intelligence/ai-project/game"`
