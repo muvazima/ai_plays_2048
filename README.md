@@ -20,5 +20,7 @@ To use **Monte Carlo Tree Search**, run the below command:
     python Test/2048solver.py -s mc
 
 Fix the directory and import error:
-export PYTHONPATH="${PYTHONPATH}:/Users/smcck/Documents/CS-DS/Artificial Intelligence/ai-project"
-export PYTHONPATH="${PYTHONPATH}:/Users/smcck/Documents/CS-DS/Artificial Intelligence/ai-project/game"
+
+```export PYTHONPATH="${PYTHONPATH}:/Users/smcck/Documents/CS-DS/Artificial Intelligence/ai-project"```
+
+```export PYTHONPATH="${PYTHONPATH}:/Users/smcck/Documents/CS-DS/Artificial Intelligence/ai-project/game"```
