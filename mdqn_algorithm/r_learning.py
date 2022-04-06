@@ -107,7 +107,7 @@ class Q_agent:
     parameter_shape = {2: (24, 256), 3: (52, 4096), 4: (17, 65536)}
 
     def __init__(self, weights=None, reward=basic_reward, step=0, alpha=0.2, decay=0.999,
-                 file=None, n=4):
+                 file=None, n=4, mode = "a"):
         self.R = reward
         self.step = step
         self.alpha = alpha
@@ -115,6 +115,7 @@ class Q_agent:
         self.file = file or Q_agent.save_file
         self.n = n
         self.num_feat, self.size_feat = Q_agent.parameter_shape[n]
+        self.mode = mode
 
         # The weights can be safely initialized to just zero, but that gives the 0 move (="left")
         # an initial preference. Most probably this is irrelevant, but i wanted to avoid it.
@@ -141,12 +142,13 @@ class Q_agent:
         return Q_agent.feature_functions[self.n](X)
 
     # numpy arrays have a nice "advanced slicing" trick, used in this function
-    def evaluate(self, state):
-        #features = self.features(state.row)
-        #return np.sum(self.weights[range(self.num_feat), features])
-        #print(state)
-        game = state.copy()
-        return get_total_heuristic(game.row)
+    def evaluate(self, state,mode):
+        if mode == "b":
+            features = self.features(state.row)
+            return np.sum(self.weights[range(self.num_feat), features])
+        else:
+            game = state.copy()
+            return get_total_heuristic(game.row)
 
     def update(self, state, dw):
         self.step += 1
@@ -184,7 +186,7 @@ class Q_agent:
     # A very fast and efficient procedure.
     # Then we move in that best direction, add random tile and proceed to the next cycle.
 
-    def episode(self):
+    def episode(self,mode):
         game = Game()
         state, old_label = None, 0
         while not game.game_over():
@@ -193,7 +195,7 @@ class Q_agent:
                 test = game.copy()
                 change = test.move(direction)
                 if change:
-                    value = self.evaluate(test)
+                    value = self.evaluate(test,mode = mode)
                     if value > best_value:
                         action, best_value = direction, value
             if state:
@@ -214,7 +216,7 @@ class Q_agent:
     # decay of this rate etc. Helps with the experimentation.
 
     @staticmethod
-    def train_run(num_eps, agent=None, file=None, start_ep=0, saving=True):
+    def train_run(num_eps, agent=None, file=None, start_ep=0, saving=True,mode = "a"):
         if agent is None:
             agent = Q_agent()
         if file:
@@ -225,16 +227,18 @@ class Q_agent:
         best_game, best_score = None, 0
         start = time.time()
         for i in range(start_ep + 1, num_eps + 1):
-            game = agent.episode()
+            game = agent.episode(mode)
             ma100.append(game.score)
             av1000.append(game.score)
             if game.score > best_score:
                 best_game, best_score = game, game.score
                 print('new best game!')
-                print(game)
+                print(game,type(game))
                 
-                display = Display(game.row)
-                #display.draw_grid_cells()
+                print("Game Row before error",game.row)
+                display = Display(matrix = game.row)
+
+                #display.draw_grid_cells(game.row)
 
 
 

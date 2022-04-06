@@ -1,9 +1,10 @@
 import math
 
-from constants.game_constants import *
-from game import game_functions
+#from constants.game_constants import *
+import game_functions
 import numpy as np
-from constants import game_constants
+from game_constants import *
+#from constants import game_constants
 
 
 def get_cell_value(grid, index):

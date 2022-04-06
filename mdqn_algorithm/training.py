@@ -1,7 +1,12 @@
 from r_learning import Q_agent
+import argparse
 
-agent = Q_agent(n=2)
+parser = argparse.ArgumentParser()
+parser.add_argument('--mode', help='Enter mode(Heuristic/Bucharin Heuristic')
+args = parser.parse_args()
 
-episodes = 500
+agent = Q_agent(n=2,mode = args.mode)
 
-Q_agent.train_run(episodes, agent=agent, saving=False)
+episodes = 10000
+
+Q_agent.train_run(episodes, agent=agent, saving=True,mode = args.mode)

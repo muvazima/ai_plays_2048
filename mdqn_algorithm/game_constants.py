@@ -2,7 +2,7 @@
 UP = "UP"
 DOWN = "DOWN"
 LEFT = "LEFT"
-RIGHT = "RIGHT"
+RIGHT = "RIGHT" 
 
 actions = [UP, DOWN, LEFT, RIGHT]
 
@@ -13,8 +13,9 @@ max_value_weightage = 0.15
 
 MANUAL = "Manual"
 GREEDY = "Greedy"
+MDQN = "MDQN"
 
-solver_map = {"m": MANUAL, "g": GREEDY}
+solver_map = {"m": MANUAL, "g": GREEDY,"d" : MDQN}
 
 
 

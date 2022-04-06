@@ -6,7 +6,7 @@ import game_constants
 
 import game_util_new
 
-import GreedySearch
+#import GreedySearch
 
 EDGE_LENGTH = 400
 CELL_COUNT = 4
@@ -38,7 +38,7 @@ LABEL_COLORS = {2: "#011c08", 4: "#011c08", 8: "#011c08", 16: "#011c08",
 
 
 class Display(Frame):
-    def __init__(self, solver = None):
+    def __init__(self, solver = None, matrix = None):
         Frame.__init__(self)
 
         self.grid()
@@ -56,16 +56,16 @@ class Display(Frame):
         self.grid_cells = []
         self.build_grid()
         self.init_matrix()
-        self.draw_grid_cells()
+        self.draw_grid_cells(matrix)
         #self.update(solver)
-        #self.mainloop()
+        self.mainloop()
 
 
     def update(self, solver):
         move_made = None
-
+        """"
         while not game_util_new.is_game_over(self.matrix) and solver != game_constants.MANUAL:
-            if solver == game_constants.GREEDY:
+            if solver == game_constants.MDQN:
                 move_made = GreedySearch(self.matrix).get_move()
 
             if move_made:
@@ -74,7 +74,7 @@ class Display(Frame):
                 self.draw_grid_cells()
                 move_made = False
         
-
+        """
 
         # time.sleep(1)
         # self.mainloop()
@@ -104,14 +104,14 @@ class Display(Frame):
     def init_matrix(self):
         self.matrix = game_functions.initialize_game()
 
-    def draw_grid_cells(self):
+    def draw_grid_cells(self,matrix):
         for row in range(CELL_COUNT):
             for col in range(CELL_COUNT):
-                tile_value = self.matrix[row][col]
+                tile_value = matrix[row][col]
                 if not tile_value:
                     self.grid_cells[row][col].configure(text="", bg=EMPTY_COLOR)
                 else:
-                    self.grid_cells[row][col].configure(text=str(tile_value), bg=TILE_COLORS[tile_value],fg=LABEL_COLORS[tile_value])
+                    self.grid_cells[row][col].configure(text=str(2**tile_value), bg=TILE_COLORS[2**tile_value],fg=LABEL_COLORS[2**tile_value])
 
         self.update_idletasks()
 
