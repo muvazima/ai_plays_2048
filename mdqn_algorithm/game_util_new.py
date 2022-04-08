@@ -83,7 +83,7 @@ action_functions = {
 
 def get_possible_actions(grid):
     actions = []
-    for action, func in zip(game_constants.actions,
+    for action, func in zip(actions,
                             [is_up_possible, is_down_possible, is_left_possible, is_right_possible]):
         if func(grid):
             actions.append(action)

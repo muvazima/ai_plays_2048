@@ -64,6 +64,7 @@ class Display(Frame):
 
 
     def update(self, solver):
+        i = 0
         move_made = None
 
         while not game_util.is_game_over(self.matrix) and solver != game_constants.MANUAL:
@@ -79,6 +80,8 @@ class Display(Frame):
                 self.draw_grid_cells()
                 move_made = False
                 print(self.matrix)
+                i +=1
+                print(i)
 
         # time.sleep(1)
         # self.mainloop()

@@ -5,6 +5,7 @@ from constants.game_constants import *
 from game import game_functions
 import numpy as np
 from constants import game_constants
+from mdqn_algorithm.game_constants import max_index_weightage
 
 
 def get_cell_value(grid, index):
@@ -40,7 +41,7 @@ def is_right_possible(grid):
 
 
 def is_up_possible(grid):
-    transposed_grid = np.array(grid,dtype=object).T
+    transposed_grid = np.array(grid, dtype=object).T
     for row in transposed_grid:
         for cell_index in range(len(row) - 1):
             if ((row[cell_index] == 0 and row[cell_index + 1] != 0) or (row[cell_index] == row[cell_index + 1])):
@@ -104,11 +105,12 @@ def is_game_over(grid):
 def get_total_heuristic(grid):
     # print(get_monotonicity_heuristic(grid), get_smoothness_heuristic(grid), get_empty_cell_heuristic(grid),
     #       get_max_value_heuristic(grid))
-    return sum([monotonicity_weightage * get_monotonicity_heuristic(grid),
-                smoothness_weightage * get_smoothness_heuristic(grid),
-                empty_cell_weightage * get_empty_cell_heuristic(grid),
-                max_value_weightage * get_max_value_heuristic(grid)])
-
+    # return sum([monotonicity_weightage * get_monotonicity_heuristic(grid),
+    #             smoothness_weightage * get_smoothness_heuristic(grid),
+    #             empty_cell_weightage * get_empty_cell_heuristic(grid),
+    #             max_value_weightage * get_max_value_heuristic(grid),
+    #             max_index_weightage * max_position_heuristic(grid)])
+    return snake_heuristic(grid)
 
 def get_monotonicity_heuristic(grid):
     left_diff, right_diff, up_diff, down_diff = 0, 0, 0, 0
@@ -132,7 +134,7 @@ def get_monotonicity_heuristic(grid):
                 # down_diff += abs(diff_y)
                 down_diff += 1
 
-    total = 2*(max(left_diff, right_diff) + max(up_diff, down_diff))
+    total = 2 * (max(left_diff, right_diff) + max(up_diff, down_diff))
     return total
 
 
@@ -165,3 +167,17 @@ def get_empty_cell_heuristic(grid):
 def get_max_value_heuristic(grid):
     # return mean(np.array(grid)[np.where(np.array(grid) != 0)])
     return np.max(grid)
+
+
+def max_position_heuristic(grid):
+    index_max = np.argmax(np.array(grid))
+    if index_max in [3, 7, 11, 15]:
+        return 100
+    else:
+        return 0
+
+def snake_heuristic(grid):
+    return np.sum(np.array([[2**15, 2**14, 2**13, 2**12],
+                  [2**8, 2**9, 2**10, 2**11],
+                  [2**7, 2**6, 2**5, 2**4],
+                  [2**0, 2**1, 2**2, 2**3]]) * np.array(grid))
