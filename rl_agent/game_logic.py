@@ -1,12 +1,7 @@
 import numpy as np
 import time
 from functools import partial
-
-
-# Looking up a result of moving one row left in the pre-calculated dictionary is
-# about 20% faster than calculating it every time.
-# If we optimistically take 65536 tile as a maximum of what we expect to encounter on the board,
-# the table has 83521 entries. Not much memory for a 20% speedup.
+import random
 
 def create_table():
     table = {}
@@ -37,7 +32,7 @@ def create_table():
     print('table of moves created')
     return table
 
-#   member of the class is the state of the 4*4 board,
+#   Every instance of the class is the state of the 4*4 board.
 #   score = current score in the game
 #   odometer = number of moves from the start
 #   row = numpy array of shape (4, 4)
@@ -66,8 +61,6 @@ class Game:
 
     def copy(self):
         return Game(self.score, self.odometer, self.row)
-
-    # a numpy.save method works fine not only for numpy arrays but also for ordinary lists
 
     def save_game(self, file=None):
         file = file or self.file
@@ -126,9 +119,6 @@ class Game:
                 self.row[i] = line
         return change
 
-    # The numpy library has very nice functions of transpose, rot90, ravel etc.
-    # No actual number relocation happens, just the "view" is changed. So it's very fast.
-
     def move(self, direction):
         Game.counter += 1
         self.history.append(self.copy())
@@ -143,7 +133,7 @@ class Game:
         return change
 
     @staticmethod
-    def trial_run(estimator, game_init=None, step_limit=100000, verbose=False):
+    def trial_run(estimator, game_init=None, step_limit=100000, verbose=False, mode = 'a'):
         game = game_init or Game()
         while game.odometer < step_limit:
             if game.game_over():
@@ -154,7 +144,7 @@ class Game:
                 variant = game.copy()
                 change = variant.move(direction)
                 if change:
-                    value = estimator(variant)
+                    value = estimator(variant, mode)
                     if value > best_value:
                         best_dir, best_value = direction, value
             if verbose:
@@ -164,11 +154,6 @@ class Game:
             game.new_tile()
         game.history.append(game)
         return game
-
-    # Mostly the same as above but this is a generator for Show.watch method
-    # I discovered that as soon as there is "yield" instruction inside the function,
-    # python considers the function as a generator ONLY, and you can't return anything else from it.
-    # I've read up a couple of discussions on stackoverflow. Seems this is it, no fix.
 
     @staticmethod
     def generate_trial_run(estimator, game_init=None):
@@ -189,12 +174,12 @@ class Game:
             game.new_tile()
 
     @staticmethod
-    def trial(estimator, num=20, game=None, verbose=False):
+    def trial(estimator, mode = 'a', num=20, game=None, verbose=False):
         start = time.time()
         results = []
         for i in range(num):
             now = time.time()
-            a = Game.trial_run(estimator, game_init=game, verbose=verbose)
+            a = Game.trial_run(estimator, mode = mode, game_init=game, verbose=verbose)
             results.append(a)
             fig = 1 << np.max(a.row)
             print(f'game {i}, result {a.score}, moves {a.odometer}, achieved {fig}, time = {(time.time() - now):.2f}')
@@ -208,6 +193,7 @@ class Game:
 
         for a in results[:3]:
             print(a)
+            
         elapsed = time.time() - start
         print(f'average score of {num} runs = {average}')
         print(f'8192 reached in {share(8192)}%')
@@ -247,16 +233,21 @@ class Game:
 # of the last leave in the tree. The results are pretty good, as described in the Readme file.
 
 def look_forward(game_init, depth=1, width=1, empty_limit=7, evaluator=None):
+    
     if depth == 1:
         return evaluator(game_init) if evaluator else game_init.score
+    
     empty = game_init.empty_count()
     num_tiles = min(width, empty)
+    
     if empty > empty_limit:
         num_tiles = 1
         depth = 2
+    
     average = 0
     empty_cells = game_init.empty()
     tile_positions = random.sample(empty_cells, num_tiles)
+    
     for position in tile_positions:
         game_tile = game_init.copy()
         tile = 1 if np.random.randint(10) else 2
@@ -283,6 +274,5 @@ def random_eval(game):
 
 if __name__ == "__main__":
 
-    # Just in case you enjoy watching the paint dry
     est = estimator_lf(depth=5, width=3)
     Game.trial(estimator=est, num=100)
