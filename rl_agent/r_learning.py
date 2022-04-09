@@ -52,25 +52,29 @@ def log_reward(game, action):
     next_game.move(action)
     return np.log(next_game.score + 1) - np.log(game.score + 1)
 
+def weightage(factor,i):
+    return factor**i
+
 
 # features = all adjacent pairs
 
-def f_2(X):
-    X_vert = (16 * X[:3, :] + X[1:, :]).ravel()
-    X_hor = (16 * X[:, :3] + X[:, 1:]).ravel()
-    return np.concatenate([X_vert, X_hor])
+def feature_pairs(X,param):
+    # 4 X 3 and 3 X 4 slicing 
+    var3_x_4s = (weightage(param,1) * X[:3, :] +weightage(param,0) * X[1:, :]).ravel()
+    var4_x_3s = (weightage(param,1)* X[:, :3] +weightage(param,0) * X[:, 1:]).ravel()
+    return np.concatenate([var3_x_4s,var4_x_3s])
 
 
 # features = all adjacent triples, i.e. 3 in a row + 3 in a any square missing one corner
 
-def f_3(X):
-    X_vert = (256 * X[:2, :] + 16 * X[1:3, :] + X[2:, :]).ravel()
-    X_hor = (256 * X[:, :2] + 16 * X[:, 1:3] + X[:, 2:]).ravel()
-    X_ex_00 = (256 * X[1:, :3] + 16 * X[1:, 1:] + X[:3, 1:]).ravel()
-    X_ex_01 = (256 * X[:3, :3] + 16 * X[1:, :3] + X[1:, 1:]).ravel()
-    X_ex_10 = (256 * X[:3, :3] + 16 * X[:3, 1:] + X[1:, 1:]).ravel()
-    X_ex_11 = (256 * X[:3, :3] + 16 * X[1:, :3] + X[:3, 1:]).ravel()
-    return np.concatenate([X_vert, X_hor, X_ex_00, X_ex_01, X_ex_10, X_ex_11])
+def feature_triplets(X,param):
+    verticals = (weightage(param,2) * X[:2, :] +weightage(param,1) * X[1:3, :] +weightage(param,0)*X[2:, :]).ravel()
+    horizontals = (weightage(param,2) * X[:, :2] +weightage(param,1) * X[:, 1:3] +weightage(param,0)*X[:, 2:]).ravel()
+    X_except_top_left = (weightage(param,2) * X[1:, :3] +weightage(param,1) * X[1:, 1:] +weightage(param,0)*X[:3, 1:]).ravel()
+    X_except_top_right = (weightage(param,2) * X[:3, :3] +weightage(param,1) * X[1:, :3] +weightage(param,0)*X[1:, 1:]).ravel()
+    X_except_bottom_left = (weightage(param,2) * X[:3, :3] +weightage(param,1) * X[:3, 1:] +weightage(param,0)*X[1:, 1:]).ravel()
+    X_except_bottom_right = (weightage(param,2) * X[:3, :3] +weightage(param,1) * X[1:, :3] +weightage(param,0)*X[:3, 1:]).ravel()
+    return np.concatenate([verticals, horizontals, X_except_top_left, X_except_top_right, X_except_bottom_left, X_except_bottom_right])
 
 
 # Initially i also made all adjacent quartets of different shape, but the learning was not happening.
@@ -80,11 +84,11 @@ def f_3(X):
 # to kinda suppress and contradict each other.
 # So i left just columns, rows and squares. 17 features all in all. And it works just fine.
 
-def f_4(X):
-    X_vert = (4096 * X[0, :] + 256 * X[1, :] + 16 * X[2, :] + X[3, :]).ravel()
-    X_hor = (4096 * X[:, 0] + 256 * X[:, 1] + 16 * X[:, 2] + X[:, 3]).ravel()
-    X_sq = (4096 * X[:3, :3] + 256 * X[1:, :3] + 16 * X[:3, 1:] + X[1:, 1:]).ravel()
-    return np.concatenate([X_vert, X_hor, X_sq])
+def feature_quartets(X,param):
+    verticals = (weightage(param,3) * X[0, :] +weightage(param,2)  * X[1, :] +weightage(param,1)  * X[2, :] +weightage(param,0) *X[3, :]).ravel()
+    horizontals = (weightage(param,3) * X[:, 0] +weightage(param,2) * X[:, 1] +weightage(param,1) * X[:, 2] +weightage(param,0) * X[:, 3]).ravel()
+    squares = (weightage(param,3) * X[:3, :3] +weightage(param,2) * X[1:, :3] +weightage(param,1) * X[:3, 1:] +weightage(param,0) * X[1:, 1:]).ravel()
+    return np.concatenate([verticals,horizontals,squares])
 
 
 # The RL agent. It is not actually Q, as it tries to learn values of the states (V), rather than actions (Q).
@@ -103,9 +107,9 @@ def f_4(X):
 class Q_agent:
 
     save_file = "agent.npy"     # saves the weights, training step, current alpha and type of features
-    feature_functions = {2: f_2, 3: f_3, 4: f_4}
+    feature_functions = {2: feature_pairs, 3: feature_triplets, 4: feature_quartets}
     parameter_shape = {2: (24, 256), 3: (52, 4096), 4: (17, 65536)}
-
+ 
     def __init__(self, weights=None, reward=basic_reward, step=0, alpha=0.2, decay=0.999,
                  file=None, n=4, mode = "a"):
         self.R = reward
@@ -114,9 +118,9 @@ class Q_agent:
         self.decay = decay
         self.file = file or Q_agent.save_file
         self.n = n
-        self.num_feat, self.size_feat = Q_agent.parameter_shape[n]
+        self.num_feat, self.size_feat = Q_agent.parameter_shape[n] 
         self.mode = mode
-
+        self.param = 16
         # The weights can be safely initialized to just zero, but that gives the 0 move (="left")
         # an initial preference. Most probably this is irrelevant, but i wanted to avoid it.
 
@@ -138,13 +142,13 @@ class Q_agent:
         agent = Q_agent(weights=arr[0], step=arr[1], alpha=arr[2], n=arr[3])
         return agent
 
-    def features(self, X):
-        return Q_agent.feature_functions[self.n](X)
+    def features(self, X,param):
+        return Q_agent.feature_functions[self.n](X,param)
 
     # numpy arrays have a nice "advanced slicing" trick, used in this function
     def evaluate(self, state,mode):
         if mode == "b":
-            features = self.features(state.row)
+            features = self.features(state.row,self.param)
             return np.sum(self.weights[range(self.num_feat), features])
         else:
             game = state.copy()
@@ -163,7 +167,7 @@ class Q_agent:
         # Not in the final version, but maybe makes sense, left it as it is.
 
         def _upd(X):
-            features = self.features(X)
+            features = self.features(X,self.param)
             for i, f in enumerate(features):
                 self.weights[i, f] += dw
 
@@ -186,29 +190,44 @@ class Q_agent:
     # A very fast and efficient procedure.
     # Then we move in that best direction, add random tile and proceed to the next cycle.
 
+    def flipCoin(self,p):
+        import random
+        r = random.random()
+        return r < p
     def episode(self,mode):
-        game = Game()
-        state, old_label = None, 0
-        while not game.game_over():
+        import numpy as np
+        import random
+        gamma = 0.999 #optimal value taken from a wide range of values
+        trial = Game()
+        state, previous_value = None, 0
+        while not trial.game_over():
             action, best_value = 0, -np.inf
-            for direction in range(4):
-                test = game.copy()
-                change = test.move(direction)
-                if change:
-                    value = self.evaluate(test,mode = mode)
-                    if value > best_value:
-                        action, best_value = direction, value
+            epsilon = 0.0001
+            #Epsilon Tuning
+            if self.flipCoin(epsilon):
+                action = actions.index(random.choice(actions))
+                test = trial.copy()
+                if test.move(action):
+                    best_value = self.evaluate(test,mode = mode)
+            else:
+                for direction in range(4):
+                    test = trial.copy()
+                    if test.move(direction):
+                        value = self.evaluate(test,mode = mode)
+                        if value > best_value:
+                            action, best_value = direction, value
             if state:
-                reward = self.R(game, action)
-                dw = self.alpha * (reward + best_value - old_label) / self.num_feat
+                #Bellman Equation
+                game_reward = self.R(trial, action)
+                dw = self.alpha * (game_reward + gamma*best_value - previous_value) / self.num_feat
                 self.update(state, dw)
-            game.move(action)
-            state, old_label = game.copy(), best_value
-            game.new_tile()
-        dw = - self.alpha * old_label / self.num_feat
+            trial.move(action)
+            state, previous_value = trial.copy(), best_value
+            trial.new_tile()
+        dw = - self.alpha * previous_value / self.num_feat #Back Propagation to update the feature weights
         self.update(state, dw)
-        game.history.append(game)
-        return game
+        trial.history.append(trial)
+        return trial
 
     # We save the agent every 100 steps, and best game so far - when we beat the previous record.
     # So if you train it and have to make a break at some point - no problem, by loading the agent back
@@ -218,7 +237,7 @@ class Q_agent:
     @staticmethod
     def train_run(num_eps, agent=None, file=None, start_ep=0, saving=True,mode = "a"):
         if agent is None:
-            agent = Q_agent()
+            agent = Q_agent(mode = mode)
         if file:
             agent.file = file
         av1000 = []

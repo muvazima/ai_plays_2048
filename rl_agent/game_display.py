@@ -99,7 +99,7 @@ class Display(Frame):
                 grid_row.append(t)
 
             self.grid_cells.append(grid_row)
-            print("HELLO", self.grid_cells)
+
 
     def init_matrix(self):
         self.matrix = game_functions.initialize_game()

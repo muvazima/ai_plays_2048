@@ -99,6 +99,7 @@ def get_total_heuristic(grid):
                 smoothness_weightage * get_smoothness_heuristic(grid),
                 empty_cell_weightage * get_empty_cell_heuristic(grid),
                 max_value_weightage * get_max_value_heuristic(grid)])
+    #return snake_heuristic(grid)
 
 
 def get_monotonicity_heuristic(grid):
@@ -151,3 +152,10 @@ def get_empty_cell_heuristic(grid):
 
 def get_max_value_heuristic(grid):
     return math.log(np.max(grid), 2)
+
+def snake_heuristic(grid):
+    return np.sum(np.array([[2**15, 2**14, 2**13, 2**12],
+                  [2**8, 2**9, 2**10, 2**11],
+                  [2**7, 2**6, 2**5, 2**4],
+                  [2**0, 2**1, 2**2, 2**3]]) * np.array(grid))
+
