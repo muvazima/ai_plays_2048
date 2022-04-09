@@ -4,59 +4,16 @@ from game_util_new import *
 from game_display import *
 
 
-def build_grid(self):
-    background = Frame(self, bg=GAME_COLOR,
-                        width=EDGE_LENGTH, height=EDGE_LENGTH)
-    background.grid()
-
-    for row in range(CELL_COUNT):
-        grid_row = []
-        for col in range(CELL_COUNT):
-            cell = Frame(background, bg=EMPTY_COLOR,
-                            width=EDGE_LENGTH / CELL_COUNT,
-                            height=EDGE_LENGTH / CELL_COUNT)
-            cell.grid(row=row, column=col, padx=CELL_PAD,
-                        pady=CELL_PAD)
-            t = Label(master=cell, text="",
-                        bg=EMPTY_COLOR,
-                        justify=CENTER, font=LABEL_FONT, width=5, height=2)
-            t.grid()
-            grid_row.append(t)
-
-        self.grid_cells.append(grid_row)
-
-
-def draw_grid_cells(matrix, grid_cells):
-    for row in range(CELL_COUNT):
-        for col in range(CELL_COUNT):
-            tile_value = matrix[row][col]
-            if not tile_value:
-                grid_cells[row][col].configure(text="", bg=EMPTY_COLOR)
-            else:
-                grid_cells[row][col].configure(text=str(tile_value), bg=TILE_COLORS[tile_value],fg=LABEL_COLORS[tile_value])
-
-
-
 def basic_reward(game, action):
     next_game = game.copy()
     next_game.move(action)
     return next_game.score - game.score
 
 
-# Intuitively (at least my initial intuition said so :) log-score should work better than the score itself.
-# And indeed it starts learning much faster compared to the basic reward. But then it slows down significantly.
-# I am not sure how to explain it, may be it's just an issue of learning rate tuning ..
-
-def log_reward(game, action):
-    next_game = game.copy()
-    next_game.move(action)
-    return np.log(next_game.score + 1) - np.log(game.score + 1)
-
 def weightage(factor,i):
     return factor**i
 
-
-# features = all adjacent pairs
+# features:pairs
 
 def feature_pairs(X,param):
     # 4 X 3 and 3 X 4 slicing 
@@ -65,7 +22,7 @@ def feature_pairs(X,param):
     return np.concatenate([var3_x_4s,var4_x_3s])
 
 
-# features = all adjacent triples, i.e. 3 in a row + 3 in a any square missing one corner
+# features : triplets + corners
 
 def feature_triplets(X,param):
     verticals = (weightage(param,2) * X[:2, :] +weightage(param,1) * X[1:3, :] +weightage(param,0)*X[2:, :]).ravel()
@@ -76,13 +33,7 @@ def feature_triplets(X,param):
     X_except_bottom_right = (weightage(param,2) * X[:3, :3] +weightage(param,1) * X[1:, :3] +weightage(param,0)*X[:3, 1:]).ravel()
     return np.concatenate([verticals, horizontals, X_except_top_left, X_except_top_right, X_except_bottom_left, X_except_bottom_right])
 
-
-# Initially i also made all adjacent quartets of different shape, but the learning was not happening.
-# My theory is that: 1) we want our features to intersect and correlate (otherwise we will only learn
-# some several separate pieces of the board, and that obviously can not lead to anything.
-# but 2) we don't want them to intersect too much (like 3 cells common to two quartets), as they start
-# to kinda suppress and contradict each other.
-# So i left just columns, rows and squares. 17 features all in all. And it works just fine.
+#features: squares in quartets
 
 def feature_quartets(X,param):
     verticals = (weightage(param,3) * X[0, :] +weightage(param,2)  * X[1, :] +weightage(param,1)  * X[2, :] +weightage(param,0) *X[3, :]).ravel()
@@ -91,22 +42,9 @@ def feature_quartets(X,param):
     return np.concatenate([verticals,horizontals,squares])
 
 
-# The RL agent. It is not actually Q, as it tries to learn values of the states (V), rather than actions (Q).
-# Not sure what is the correct terminology here, this is definitely a TD(0), basically a modified Q-learning.
-# The important details:
-# 1) The discount parameter gamma = 1. Don't see why discount rewards in this episodic task.
-# 2) Greedy policy, epsilon = 0, no exploration. The game is pretty stochastic as it is, no need.
-# 3) The valuation function is basically just a linear operator. I takes a vector of the values of
-#    1114112 (=65536 * 17) features and dot-product it by the vector of 1114122 weights.
-#    Sounds like a lot of computation but! and this is the beauty - all except 17 of the features
-#    are exactly zero, and those 17 are exactly 1. So the whole dot product is just a sum of 17 weights,
-#    corresponding to the 1-features.
-# 4) The same goes for back-propagation. We only need to update 17 numbers of 1m+ on every step.
-# 5) But in fact we update 17 * 8 weights using an obvious D4 symmetry group acting on the board
-
 class Q_agent:
 
-    save_file = "agent.npy"     # saves the weights, training step, current alpha and type of features
+    save_file = "agent.npy"     # saves the agent
     feature_functions = {2: feature_pairs, 3: feature_triplets, 4: feature_quartets}
     parameter_shape = {2: (24, 256), 3: (52, 4096), 4: (17, 65536)}
  
@@ -121,15 +59,12 @@ class Q_agent:
         self.num_feat, self.size_feat = Q_agent.parameter_shape[n] 
         self.mode = mode
         self.param = 16
-        # The weights can be safely initialized to just zero, but that gives the 0 move (="left")
-        # an initial preference. Most probably this is irrelevant, but i wanted to avoid it.
 
         if weights is None:
             self.weights = weights or np.random.random((self.num_feat, self.size_feat)) / 100
         else:
             self.weights = weights
 
-    # a numpy.save method works fine not only for numpy arrays but also for ordinary lists
     def save_agent(self, file=None):
         file = file or self.file
         arr = np.array([self.weights, self.step, self.alpha, self.n])
@@ -145,7 +80,6 @@ class Q_agent:
     def features(self, X,param):
         return Q_agent.feature_functions[self.n](X,param)
 
-    # numpy arrays have a nice "advanced slicing" trick, used in this function
     def evaluate(self, state,mode):
         if mode == "b":
             features = self.features(state.row,self.param)
@@ -162,17 +96,10 @@ class Q_agent:
             print(f'step = {self.step}, learning rate = {self.alpha}')
             print('------')
 
-        # Didn't use advanced slicing here because i experimented with the idea of updating
-        # a feature only once, even if it happens several times in D4 images of the board
-        # Not in the final version, but maybe makes sense, left it as it is.
-
         def _upd(X):
             features = self.features(X,self.param)
             for i, f in enumerate(features):
                 self.weights[i, f] += dw
-
-        # The numpy library has very nice functions of transpose, rot90, ravel etc.
-        # No actual number relocation happens, just the "view" is changed. So it's very fast.
 
         X = state.row
         for _ in range(4):
@@ -181,14 +108,6 @@ class Q_agent:
             _upd(X)
             X = np.rot90(np.transpose(X))
 
-    # The game 2048 has two kinds of states. After we make a move - this is the one we try to evaluate,
-    # and after the random 2-4 tile is placed afterwards.
-    # On each step we check which of the available moves leads to a state, which has the highest value
-    # according to the current weights of our evaluator. Now we use that best value, our learning rate
-    # and the usual Bellman Equation to make a back-propagation update for the previous such state.
-    # In this case - we adjust several weights by the same small delta.
-    # A very fast and efficient procedure.
-    # Then we move in that best direction, add random tile and proceed to the next cycle.
 
     def flipCoin(self,p):
         import random
@@ -224,15 +143,12 @@ class Q_agent:
             trial.move(action)
             state, previous_value = trial.copy(), best_value
             trial.new_tile()
+        #back propagation choices
         dw = - self.alpha * previous_value / self.num_feat #Back Propagation to update the feature weights
+        #dw  -= self.alpha * previous_value / self.num_feat #Back Propagation to update the feature weights
         self.update(state, dw)
         trial.history.append(trial)
         return trial
-
-    # We save the agent every 100 steps, and best game so far - when we beat the previous record.
-    # So if you train it and have to make a break at some point - no problem, by loading the agent back
-    # you only lose last <100 episodes. Also, after reloading the agent one can adjust the learning rate,
-    # decay of this rate etc. Helps with the experimentation.
 
     @staticmethod
     def train_run(num_eps, agent=None, file=None, start_ep=0, saving=True,mode = "a"):
@@ -253,14 +169,8 @@ class Q_agent:
                 best_game, best_score = game, game.score
                 print('new best game!')
                 print(game,type(game))
-                
-                print("Game Row before error",game.row)
                 display = Display(matrix = game.row)
-
                 #display.draw_grid_cells(game.row)
-
-
-
                 if saving:
                     game.save_game(file='best_game.npy')
                     print('game saved at best_game.npy')
@@ -294,14 +204,7 @@ if __name__ == "__main__":
 
     num_eps = 100000
 
-    # Run the below line to see the magic. How it starts with random moves and immediately
-    # starts climbing the ladder
-
     agent = Q_agent(n=4, reward=basic_reward, alpha=0.1, file="new_agent.npy")
-
-    # Uncomment/comment the above line with the below if you continue training the same agent,
-    # update agent.alpha and agent.decay if needed.
-
     # agent = Q_agent.load_agent(file="best_agent.npy")
 
     Q_agent.train_run(num_eps, agent=agent, file="new_best_agent.npy", start_ep=0)
