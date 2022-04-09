@@ -1,6 +1,6 @@
 import time
 from tkinter import Frame, Label, CENTER
-
+import pandas as pd
 import game_functions
 from algorithms.Expectimax import Expectimax
 from algorithms.MonteCarlo import MonteCarlo
@@ -66,7 +66,9 @@ class Display(Frame):
     def update(self, solver):
         i = 0
         move_made = None
-
+        stats_dict={'count_1024':0,'count_2048':0,'count_4096':0,'count_8192':0,'execution_time':0,'execution_time_iter':0,'num_iters':0}
+        
+        start_time=time.time()
         while not game_util.is_game_over(self.matrix) and solver != game_constants.MANUAL:
             if solver == game_constants.GREEDY:
                 move_made = GreedySearch(self.matrix).get_move()
@@ -80,9 +82,23 @@ class Display(Frame):
                 self.draw_grid_cells()
                 move_made = False
                 print(self.matrix)
+                if(1024 in self.matrix):
+                    stats_dict['count_1024']+=1
+                if(2048 in self.matrix):
+                    stats_dict['count_2048']+=1
+                if(4096 in self.matrix):
+                    stats_dict['count_4096']+=1
+                if(8192 in self.matrix):
+                    stats_dict['count_8192']+=1
                 i +=1
                 print(i)
-
+        
+        stats_dict['num_iters']=i
+        stats_dict['execution_time']=time.time()-start_time
+        stats_dict['execution_time_iter']=stats_dict['execution_time']/i
+        print(stats_dict)
+        df=pd.DataFrame([stats_dict])
+        df.to_csv("./Stats/"+solver+".csv")
         # time.sleep(1)
         # self.mainloop()
 

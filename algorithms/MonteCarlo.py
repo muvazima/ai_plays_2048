@@ -82,7 +82,7 @@ class MonteCarlo:
         Q = {}
         N = {}
         T = set()
-        depth = 5
+        depth = 4
         for i in range(self.rollouts):
             self.simulate(self.grid, Q, T, N, depth)
 

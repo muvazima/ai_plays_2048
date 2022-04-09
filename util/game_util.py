@@ -5,7 +5,7 @@ from constants.game_constants import *
 from game import game_functions
 import numpy as np
 from constants import game_constants
-from mdqn_algorithm.game_constants import max_index_weightage
+#from mdqn_algorithm.game_constants import max_index_weightage
 
 
 def get_cell_value(grid, index):

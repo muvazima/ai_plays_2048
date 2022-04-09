@@ -11,7 +11,7 @@ class Expectimax:
         self.grid = grid
 
     def get_move(self):
-        depth = 5
+        depth = 4
         action_dict = {}
         for action in game_util.get_possible_actions(self.grid):
             child, _, _ = game_util.action_functions[action](self.grid)
