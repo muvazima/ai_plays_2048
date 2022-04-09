@@ -1,6 +1,7 @@
 import time
 from tkinter import Frame, Label, CENTER
 import pandas as pd
+from csv import DictWriter
 import game_functions
 from algorithms.Expectimax import Expectimax
 from algorithms.MonteCarlo import MonteCarlo
@@ -96,9 +97,19 @@ class Display(Frame):
         stats_dict['num_iters']=i
         stats_dict['execution_time']=time.time()-start_time
         stats_dict['execution_time_iter']=stats_dict['execution_time']/i
+        if(solver=='MonteCarlo'):
+            stats_dict['depth']=4
+            stats_dict['roll_out']=100
+        if(solver=='Expectimax'):
+            stats_dict['depth']=4
         print(stats_dict)
-        df=pd.DataFrame([stats_dict])
-        df.to_csv("./Stats/"+solver+".csv")
+        
+        with open("./Stats/"+solver+".csv","a") as f:
+            dw_object = DictWriter(f, fieldnames=stats_dict.keys())
+            dw_object.writerow(stats_dict)
+            f.close()
+        # df=pd.DataFrame([stats_dict])
+        # df.to_csv("./Stats/"+solver+".csv",mode='a',header=False)
         # time.sleep(1)
         # self.mainloop()
 
