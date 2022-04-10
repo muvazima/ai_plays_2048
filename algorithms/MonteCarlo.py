@@ -15,60 +15,6 @@ class MonteCarlo:
         self.grid = grid
         self.rollouts = 100
 
-    # def get_move(self):
-    #     action_dict = {}
-    #     for action in game_util.get_possible_actions(self.grid):
-    #         move_value_merge = 0
-    #         move_value_sum = 0
-    #         move_value_max = 0
-    #         child, merge_score = self.make_move(self.grid, action)
-    #         possible_actions = game_util.get_possible_actions(child)
-    #         move_value = [game_util.get_total_heuristic(child)]
-    #         if len(possible_actions) != 0:
-    #             for i in range(self.rollouts):
-    #                 child, merge_score = self.make_move(child, random.choice(possible_actions))
-    #                 move_value.append(game_util.get_total_heuristic(child))
-    #                 # move_value_merge += merge_score
-    #                 # move_value_sum += np.sum(child_child)
-    #                 # move_value_max += np.max(child)
-    #         action_dict[action] = mean(move_value)
-    #
-    #     return max(action_dict, key=action_dict.get)
-
-    # def get_move(self):
-    #     action_dict = {}
-    #     for action in game_util.get_possible_actions(self.grid):
-    #         move_value_merge = 0
-    #         move_value_sum = 0
-    #         move_value_max = 0
-    #         child, merge_score = self.make_move(self.grid, action)
-    #         possible_actions = game_util.get_possible_actions(child)
-    #         move_value = []
-    #
-    #         # print(possible_actions)
-    #         if len(possible_actions) != 0:
-    #             for i in range(self.rollouts):
-    #                 child_child = child.copy()
-    #                 s = 0
-    #                 rollout_score = 0
-    #                 while not game_util.is_game_over(child_child):
-    #                     s += 1
-    #                     # print(s, end=" "),
-    #                     child_child, merge_score = self.make_move(
-    #                                                     child_child,
-    #                                                     random.choice(game_util.get_possible_actions(child_child)))
-    #                     rollout_score = np.max(child_child)
-    #                     # rollout_score += merge_score
-    #                     # print(child_child)
-    #
-    #                 move_value.append(rollout_score)
-    #                 # move_value_merge += merge_score
-    #                 # move_value_sum += np.sum(child_child)
-    #                 # move_value_max += np.max(child)
-    #         action_dict[action] = mean(move_value)
-    #     print(action_dict)
-    #     return max(action_dict, key=action_dict.get)
-    #
     def make_move(self, board, action):
         if game_util.action_possible[action](board):
             output, _, merge_score = game_util.action_functions[action](board)

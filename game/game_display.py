@@ -1,13 +1,10 @@
 import time
 from tkinter import Frame, Label, CENTER
-# import pandas as pd
-import numpy as np
-from csv import DictWriter
+
 import game_functions
 from algorithms.Expectimax import Expectimax
 from algorithms.MonteCarlo import MonteCarlo
 from constants import game_constants
-import pandas as pd
 from util import game_util
 
 from algorithms.GreedySearch import GreedySearch
@@ -67,12 +64,12 @@ class Display(Frame):
     def update(self, solver):
         i = 0
         move_made = None
-        flag1024 = False
-        flag2048 = False
-        flag4096 = False
-        flag8192 = False
-        stats_dict = {'execution_time': 0, 'execution_time_iter': 0, 'num_iters': 0, "max_num": 0,
-                      'time_1024': 0, 'time_2048': 0, 'time_4096': 0, 'time_8192': 0, 'depth': 0, 'roll_out': 0}
+        # flag1024 = False
+        # flag2048 = False
+        # flag4096 = False
+        # flag8192 = False
+        # stats_dict = {'execution_time': 0, 'execution_time_iter': 0, 'num_iters': 0, "max_num": 0,
+        #               'time_1024': 0, 'time_2048': 0, 'time_4096': 0, 'time_8192': 0, 'depth': 0, 'roll_out': 0}
 
         start_time = time.time()
         while not game_util.is_game_over(self.matrix) and solver != game_constants.MANUAL:
@@ -87,41 +84,9 @@ class Display(Frame):
                 self.matrix = game_functions.add_new_tile(self.matrix)
                 self.draw_grid_cells()
                 move_made = False
-                # print(self.matrix)
-                if (1024 in self.matrix and not flag1024):
-                    stats_dict['time_1024'] = time.time() - start_time
-                if (2048 in self.matrix and not flag2048):
-                    stats_dict['time_2048'] = time.time() - start_time
-                if (4096 in self.matrix and not flag4096):
-                    stats_dict['time_4096'] = time.time() - start_time
-                if (8192 in self.matrix and not flag8192):
-                    stats_dict['time_8192'] = time.time() - start_time
-                i += 1
-                # print(i)
-        stats_dict["max_num"] = np.max(self.matrix)
-        stats_dict['num_iters'] = i
-        stats_dict['execution_time'] = time.time() - start_time
-        stats_dict['execution_time_iter'] = stats_dict['execution_time'] / i
-        if (solver == 'MonteCarlo'):
-            stats_dict['depth'] = 2
-            stats_dict['roll_out'] = 100
-        if (solver == 'Expectimax'):
-            stats_dict['depth'] = 2
-        # print(stats_dict)
+                print(self.matrix)
 
-        # with open("./Stats/" + solver + "_new.csv", "a") as f:
-        #     dw_object = DictWriter(f, fieldnames=stats_dict.keys())
-        #     dw_object.writerow(stats_dict)
-        #     f.close()
-        df_old=pd.read_csv("./Stats/"+solver+"_3.csv")
-        df=pd.DataFrame([stats_dict])
-        df_new=pd.concat([df_old,df],axis=0)
-        #df_new.drop(['Unnamed: 0'],axis=1,inplace=True)
-        df_new.to_csv("./Stats/"+solver+"_3.csv", index=False)
-        # df=pd.DataFrame([stats_dict])
-        # df.to_csv("./Stats/"+solver+".csv",mode='a',header=False)
-        # time.sleep(1)
-        # self.mainloop()
+        self.mainloop()
 
     def build_grid(self):
         background = Frame(self, bg=GAME_COLOR,

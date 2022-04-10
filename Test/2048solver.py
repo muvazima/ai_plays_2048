@@ -10,10 +10,8 @@ if __name__ == "__main__":
 
     solver = args[solver_index + 1]
 
-
     if solver in game_constants.solver_map.keys():
-        for i in range(15):
-            p = Display(game_constants.solver_map[solver])
+        p = Display(game_constants.solver_map[solver])
     else:
         print("No such solver")
 
