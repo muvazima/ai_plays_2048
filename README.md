@@ -8,6 +8,10 @@ cution time, highest score achieved and percentage of wins. Expectimax
 was found to be the best performing, achieving a high score of 8192.
 
 ## How to Run
+Before running any of the commands run the below command:
+
+    export PYTHONPATH="${PYTHONPATH}:./game"
+
 To play the 2048 game **manually**, run the below command from the project directory
 
     python Test/2048solver.py -s m
@@ -52,7 +56,6 @@ Where --trials = number of test episodes/game-plays
 [3] Reference for Game Design, N-Tuple Q Learning - https://github.com/abachurin/2048
 
 
-Fix the directory and import error:
 
-    export PYTHONPATH="${PYTHONPATH}:./game"
+
 
