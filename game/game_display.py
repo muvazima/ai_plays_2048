@@ -57,8 +57,8 @@ class Display(Frame):
                          # GREEDY_KEY = GreedySearch()
                          }
 
-        # self.grid_cells = []
-        # self.build_grid()
+        self.grid_cells = []
+        self.build_grid()
         self.init_matrix()
         # self.draw_grid_cells()
         self.update(solver)
@@ -68,6 +68,10 @@ class Display(Frame):
     def update(self, solver):
         i = 0
         move_made = None
+        flag1024 = False
+        flag2048 = False
+        flag4096 = False
+        flag8192 = False
         stats_dict={'count_1024':0,'count_2048':0,'count_4096':0,'count_8192':0,'execution_time':0,'execution_time_iter':0,'num_iters':0, "max_num":0}
         
         start_time=time.time()
@@ -84,14 +88,14 @@ class Display(Frame):
                 self.draw_grid_cells()
                 move_made = False
                 # print(self.matrix)
-                if(1024 in self.matrix):
-                    stats_dict['count_1024']+=1
-                if(2048 in self.matrix):
-                    stats_dict['count_2048']+=1
-                if(4096 in self.matrix):
-                    stats_dict['count_4096']+=1
-                if(8192 in self.matrix):
-                    stats_dict['count_8192']+=1
+                if(1024 in self.matrix and not flag1024):
+                    stats_dict['time_1024'] = time.time()-start_time
+                if(2048 in self.matrix and not flag2048):
+                    stats_dict['time_2048'] = time.time()-start_time
+                if(4096 in self.matrix and not flag4096):
+                    stats_dict['time_4096'] = time.time()-start_time
+                if(8192 in self.matrix and not flag8192):
+                    stats_dict['time_8192'] = time.time()-start_time
                 i +=1
                 # print(i)
         stats_dict["max_num"] = np.max(self.matrix)
@@ -105,7 +109,7 @@ class Display(Frame):
             stats_dict['depth']=3
         # print(stats_dict)
         
-        with open("./Stats/"+solver+".csv","a") as f:
+        with open("./Stats/test"+solver+".csv","a") as f:
             dw_object = DictWriter(f, fieldnames=stats_dict.keys())
             dw_object.writerow(stats_dict)
             f.close()
