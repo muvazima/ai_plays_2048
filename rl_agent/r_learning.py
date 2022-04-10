@@ -171,7 +171,7 @@ class Q_agent:
             game = agent.episode(mode)
             
             if(game.score % 2 != 0 ): 
-                print("WTF")
+                print("That's odd")
             
             print("GAME SCORE:", game.score)
             
