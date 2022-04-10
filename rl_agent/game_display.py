@@ -1,12 +1,9 @@
 import time
 from tkinter import Frame, Label, CENTER
-
 import game_functions
 import game_constants
-
 import game_util_new
 
-#import GreedySearch
 
 EDGE_LENGTH = 400
 CELL_COUNT = 4
@@ -126,20 +123,6 @@ class Display(Frame):
                 self.matrix = game_functions.add_new_tile(self.matrix)
                 self.draw_grid_cells()
                 move_made = False
-        # if key == AI_PLAY_KEY:
-        #     move_count = 0
-        #     while valid_game:
-        #         self.matrix, valid_game = game_ai.ai_move(self.matrix, 40, 30)
-        #         if valid_game:
-        #             self.matrix = game_functions.add_new_tile(self.matrix)
-        #             self.draw_grid_cells()
-        #         move_count += 1
-        # if key == AI_KEY:
-        #     self.matrix, move_made = game_ai.ai_move(self.matrix, 20, 30)
-        #     if move_made:
-        #         self.matrix = game_functions.add_new_tile(self.matrix)
-        #         self.draw_grid_cells()
-        #         move_made = False
 
         elif key in self.commands:
             self.matrix, move_made, _ = self.commands[repr(event.char)](self.matrix)

@@ -219,19 +219,6 @@ class Game:
         print('no more moves possible, final position =')
         print(self.history[-1])
 
-# This is a plain vanilla "let's try to look several moves ahead taking several random tiles at each step".
-# Kind of Expectimax algorithm, except we start only when there are few empty cells left and limit the number of random tiles.
-# If you choose (depth, width) = (5,3) , the statistics will be roughly the following:
-# 1024 = 100%
-# 2048 = 62%
-# 4096 = 4%
-# The game to 2048 takes about 25-30 minutes. Compare this with 1 second (!) for my Q-agent ...
-# The average score and most other statistics is way better for Q-agent with one curious exception:
-# You can see that look_forward(depth=5, width=3) reaches 1024 basically always.
-# Whereas Q_agent reaches 1024 in 94-95% of games, and occasionally stops as low as 256 tile.
-# As you can see below, we can put Q_agent valuation (or any other estimator) as an evaluator
-# of the last leave in the tree. The results are pretty good, as described in the Readme file.
-
 def look_forward(game_init, depth=1, width=1, empty_limit=7, evaluator=None):
     
     if depth == 1:
