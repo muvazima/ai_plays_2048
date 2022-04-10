@@ -37,6 +37,7 @@ To train the **RL agent**, run the below command:
 Where --mode b = Tuple Heuristic, --mode a = Snake Heuristic , --display n/y , y: display grid whenever a best score is recorded, n: don't display grid and num = number of traiing episodes.
 
 To use the trained **Q learning**, run the below command:
+
     python3 test.py --mode b --trials 15 
 
 Where --trials = number of test episodes/game-plays
