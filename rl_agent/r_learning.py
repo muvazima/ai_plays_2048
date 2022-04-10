@@ -52,7 +52,7 @@ class Q_agent:
  
     # Discount, learning rate chosen as 1, 0.2 after multiple experiments.
     # Discount = 0.999 was v slow after 150 episodes, need to explore further.
-    def __init__(self, weights=None, reward=basic_reward, step=0, alpha=0.2, discount=1, epsilon = 0.0001, file=None, n=4, mode = "a"):
+    def __init__(self, weights=None, reward=basic_reward, step=0, alpha=0.2, discount=1, epsilon = 0, file=None, n=4, mode = "a"):
         
         self.R = reward
         self.step = step
