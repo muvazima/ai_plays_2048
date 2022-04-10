@@ -1,6 +1,7 @@
 import time
 from tkinter import Frame, Label, CENTER
-import pandas as pd
+# import pandas as pd
+import numpy as np
 from csv import DictWriter
 import game_functions
 from algorithms.Expectimax import Expectimax
@@ -56,18 +57,18 @@ class Display(Frame):
                          # GREEDY_KEY = GreedySearch()
                          }
 
-        self.grid_cells = []
-        self.build_grid()
+        # self.grid_cells = []
+        # self.build_grid()
         self.init_matrix()
-        self.draw_grid_cells()
+        # self.draw_grid_cells()
         self.update(solver)
-        self.mainloop()
+        # self.mainloop()
 
 
     def update(self, solver):
         i = 0
         move_made = None
-        stats_dict={'count_1024':0,'count_2048':0,'count_4096':0,'count_8192':0,'execution_time':0,'execution_time_iter':0,'num_iters':0}
+        stats_dict={'count_1024':0,'count_2048':0,'count_4096':0,'count_8192':0,'execution_time':0,'execution_time_iter':0,'num_iters':0, "max_num":0}
         
         start_time=time.time()
         while not game_util.is_game_over(self.matrix) and solver != game_constants.MANUAL:
@@ -82,7 +83,7 @@ class Display(Frame):
                 self.matrix = game_functions.add_new_tile(self.matrix)
                 self.draw_grid_cells()
                 move_made = False
-                print(self.matrix)
+                # print(self.matrix)
                 if(1024 in self.matrix):
                     stats_dict['count_1024']+=1
                 if(2048 in self.matrix):
@@ -92,8 +93,8 @@ class Display(Frame):
                 if(8192 in self.matrix):
                     stats_dict['count_8192']+=1
                 i +=1
-                print(i)
-        
+                # print(i)
+        stats_dict["max_num"] = np.max(self.matrix)
         stats_dict['num_iters']=i
         stats_dict['execution_time']=time.time()-start_time
         stats_dict['execution_time_iter']=stats_dict['execution_time']/i
@@ -101,8 +102,8 @@ class Display(Frame):
             stats_dict['depth']=4
             stats_dict['roll_out']=100
         if(solver=='Expectimax'):
-            stats_dict['depth']=4
-        print(stats_dict)
+            stats_dict['depth']=3
+        # print(stats_dict)
         
         with open("./Stats/"+solver+".csv","a") as f:
             dw_object = DictWriter(f, fieldnames=stats_dict.keys())
