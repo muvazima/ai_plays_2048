@@ -38,18 +38,17 @@ Where --mode b = Tuple Heuristic, --mode a = Snake Heuristic , --display n/y , y
 
 To use the trained **Q learning**, run the below command:
 
-    python3 test.py --mode b --trials 15 
+    python3 rl_agent/test.py --mode b --trials 15 
 
 Where --trials = number of test episodes/game-plays
 
 ## References
-[1]https://github.com/kiteco/python-youtube-code/tree/master/AI-plays-2048
-[2]https://github.com/huntermills707/2048MDPsolver
-[3]https://github.com/abachurin/2048
+[1] Reference for UI and Game Design - https://github.com/kiteco/python-youtube-code/tree/master/AI-plays-2048\
+[2] Reference for MCTS - https://github.com/huntermills707/2048MDPsolver\
+[3] Reference for Game Design, N-Tuple Q Learning - https://github.com/abachurin/2048
 
 
 Fix the directory and import error:
 
-`export PYTHONPATH="${PYTHONPATH}:/Users/smcck/Documents/CS-DS/Artificial Intelligence/ai-project"`
+    export PYTHONPATH="${PYTHONPATH}:./game"
 
-`export PYTHONPATH="${PYTHONPATH}:/Users/smcck/Documents/CS-DS/Artificial Intelligence/ai-project/game"`
