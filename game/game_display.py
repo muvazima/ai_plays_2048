@@ -103,7 +103,7 @@ class Display(Frame):
         stats_dict['execution_time'] = time.time() - start_time
         stats_dict['execution_time_iter'] = stats_dict['execution_time'] / i
         if (solver == 'MonteCarlo'):
-            stats_dict[l'depth'] = 4
+            stats_dict['depth'] = 4
             stats_dict['roll_out'] = 100
         if (solver == 'Expectimax'):
             stats_dict['depth'] = 2
