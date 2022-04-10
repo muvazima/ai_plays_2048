@@ -44,7 +44,9 @@ Where --trials = number of test episodes/game-plays
 
 ## References
 [1] Reference for UI and Game Design - https://github.com/kiteco/python-youtube-code/tree/master/AI-plays-2048\
+
 [2] Reference for MCTS - https://github.com/huntermills707/2048MDPsolver\
+
 [3] Reference for Game Design, N-Tuple Q Learning - https://github.com/abachurin/2048
 
 
