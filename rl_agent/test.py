@@ -14,7 +14,7 @@ args = parser.parse_args()
 # Loading the trained agent from best_agent.npy.
 # Execute args.trials episodes, replay the best episode.
 
-agent = Q_agent.load_agent("best_agent_trained_50kepisodes.npy", args.mode)
+agent = Q_agent.load_agent("best_agent.npy", args.mode)
 est = agent.evaluate
 results = Game.trial(estimator=est, num = int(args.trials), mode = args.mode)
 

@@ -32,13 +32,15 @@ To use **Monte Carlo Tree Search**, run the below command:
 ### Tuple based Q learning
 To train the **RL agent**, run the below command:
 
-    python3 rl_agent/training.py --mode b --display n --num 500 
+    cd rl_agent
+    python3 training.py --mode b --display n --num 1000
 
 Where --mode b = Tuple Heuristic, --mode a = Snake Heuristic , --display n/y , y: display grid whenever a best score is recorded, n: don't display grid and num = number of traiing episodes.
 
 To use the trained **Q learning**, run the below command:
 
-    python3 rl_agent/test.py --mode b --trials 15 
+    cd rl_agent
+    python3 test.py --mode b --trials 15 
 
 Where --trials = number of test episodes/game-plays
 
