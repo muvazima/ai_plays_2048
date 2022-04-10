@@ -7,7 +7,7 @@ import game_functions
 from algorithms.Expectimax import Expectimax
 from algorithms.MonteCarlo import MonteCarlo
 from constants import game_constants
-
+import pandas as pd
 from util import game_util
 
 from algorithms.GreedySearch import GreedySearch
@@ -103,16 +103,21 @@ class Display(Frame):
         stats_dict['execution_time'] = time.time() - start_time
         stats_dict['execution_time_iter'] = stats_dict['execution_time'] / i
         if (solver == 'MonteCarlo'):
-            stats_dict['depth'] = 4
+            stats_dict['depth'] = 2
             stats_dict['roll_out'] = 100
         if (solver == 'Expectimax'):
             stats_dict['depth'] = 2
         # print(stats_dict)
 
-        with open("./Stats/" + solver + ".csv", "a") as f:
-            dw_object = DictWriter(f, fieldnames=stats_dict.keys())
-            dw_object.writerow(stats_dict)
-            f.close()
+        # with open("./Stats/" + solver + "_new.csv", "a") as f:
+        #     dw_object = DictWriter(f, fieldnames=stats_dict.keys())
+        #     dw_object.writerow(stats_dict)
+        #     f.close()
+        df_old=pd.read_csv("./Stats/"+solver+"_3.csv")
+        df=pd.DataFrame([stats_dict])
+        df_new=pd.concat([df_old,df],axis=0)
+        #df_new.drop(['Unnamed: 0'],axis=1,inplace=True)
+        df_new.to_csv("./Stats/"+solver+"_3.csv", index=False)
         # df=pd.DataFrame([stats_dict])
         # df.to_csv("./Stats/"+solver+".csv",mode='a',header=False)
         # time.sleep(1)

@@ -13,7 +13,7 @@ class MonteCarlo:
 
     def __init__(self, grid):
         self.grid = grid
-        self.rollouts = 1
+        self.rollouts = 100
 
     # def get_move(self):
     #     action_dict = {}
@@ -82,7 +82,7 @@ class MonteCarlo:
         Q = {}
         N = {}
         T = set()
-        depth = 4
+        depth = 2
         for i in range(self.rollouts):
             self.simulate(self.grid, Q, T, N, depth)
 
