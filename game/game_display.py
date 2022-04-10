@@ -50,12 +50,12 @@ class Display(Frame):
         self.master.bind("<Key>", self.key_press)
 
         self.commands = {
-                         UP_KEY: game_functions.move_up,
-                         DOWN_KEY: game_functions.move_down,
-                         LEFT_KEY: game_functions.move_left,
-                         RIGHT_KEY: game_functions.move_right
-                         # GREEDY_KEY = GreedySearch()
-                         }
+            UP_KEY: game_functions.move_up,
+            DOWN_KEY: game_functions.move_down,
+            LEFT_KEY: game_functions.move_left,
+            RIGHT_KEY: game_functions.move_right
+            # GREEDY_KEY = GreedySearch()
+        }
 
         self.grid_cells = []
         self.build_grid()
@@ -64,7 +64,6 @@ class Display(Frame):
         self.update(solver)
         # self.mainloop()
 
-
     def update(self, solver):
         i = 0
         move_made = None
@@ -72,9 +71,10 @@ class Display(Frame):
         flag2048 = False
         flag4096 = False
         flag8192 = False
-        stats_dict={'count_1024':0,'count_2048':0,'count_4096':0,'count_8192':0,'execution_time':0,'execution_time_iter':0,'num_iters':0, "max_num":0}
-        
-        start_time=time.time()
+        stats_dict = {'execution_time': 0, 'execution_time_iter': 0, 'num_iters': 0, "max_num": 0,
+                      'time_1024': 0, 'time_2048': 0, 'time_4096': 0, 'time_8192': 0, 'depth': 0, 'roll_out': 0}
+
+        start_time = time.time()
         while not game_util.is_game_over(self.matrix) and solver != game_constants.MANUAL:
             if solver == game_constants.GREEDY:
                 move_made = GreedySearch(self.matrix).get_move()
@@ -88,28 +88,28 @@ class Display(Frame):
                 self.draw_grid_cells()
                 move_made = False
                 # print(self.matrix)
-                if(1024 in self.matrix and not flag1024):
-                    stats_dict['time_1024'] = time.time()-start_time
-                if(2048 in self.matrix and not flag2048):
-                    stats_dict['time_2048'] = time.time()-start_time
-                if(4096 in self.matrix and not flag4096):
-                    stats_dict['time_4096'] = time.time()-start_time
-                if(8192 in self.matrix and not flag8192):
-                    stats_dict['time_8192'] = time.time()-start_time
-                i +=1
+                if (1024 in self.matrix and not flag1024):
+                    stats_dict['time_1024'] = time.time() - start_time
+                if (2048 in self.matrix and not flag2048):
+                    stats_dict['time_2048'] = time.time() - start_time
+                if (4096 in self.matrix and not flag4096):
+                    stats_dict['time_4096'] = time.time() - start_time
+                if (8192 in self.matrix and not flag8192):
+                    stats_dict['time_8192'] = time.time() - start_time
+                i += 1
                 # print(i)
         stats_dict["max_num"] = np.max(self.matrix)
-        stats_dict['num_iters']=i
-        stats_dict['execution_time']=time.time()-start_time
-        stats_dict['execution_time_iter']=stats_dict['execution_time']/i
-        if(solver=='MonteCarlo'):
-            stats_dict['depth']=4
-            stats_dict['roll_out']=100
-        if(solver=='Expectimax'):
-            stats_dict['depth']=3
+        stats_dict['num_iters'] = i
+        stats_dict['execution_time'] = time.time() - start_time
+        stats_dict['execution_time_iter'] = stats_dict['execution_time'] / i
+        if (solver == 'MonteCarlo'):
+            stats_dict[l'depth'] = 4
+            stats_dict['roll_out'] = 100
+        if (solver == 'Expectimax'):
+            stats_dict['depth'] = 2
         # print(stats_dict)
-        
-        with open("./Stats/test"+solver+".csv","a") as f:
+
+        with open("./Stats/" + solver + ".csv", "a") as f:
             dw_object = DictWriter(f, fieldnames=stats_dict.keys())
             dw_object.writerow(stats_dict)
             f.close()

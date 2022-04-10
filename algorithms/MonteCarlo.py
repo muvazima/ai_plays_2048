@@ -13,7 +13,7 @@ class MonteCarlo:
 
     def __init__(self, grid):
         self.grid = grid
-        self.rollouts = 100
+        self.rollouts = 1
 
     # def get_move(self):
     #     action_dict = {}
