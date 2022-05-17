@@ -1,4 +1,4 @@
-# ai-project
+# AI plays 2048
 In this project, different AI algorithms are trained to play
 2048, the single player tile-based puzzle game, and their performances
 are compared. The algorithms implemented are - Greedy Search as the
